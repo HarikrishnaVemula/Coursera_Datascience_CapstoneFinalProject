@@ -17,7 +17,7 @@ widgets: bootstrap
 
 
 
-## ##
+## Intial Note ##
 
 **Introduction**
 
@@ -29,7 +29,7 @@ We can notice how we can model/train the data with basic mining concepts for get
 
 When we type a phrase in the input box, we need to get a prediction of a single word after pressing submit.
 
-## ##
+## Modeling ##
 
 **Prediction Model**
 
@@ -52,6 +52,62 @@ Next word prediction shiny web app UI having following fields.
 4) Side panel and notification text for user experience.
 
 ## ##
+**Algorithm**
+
+Server code:
+```{r echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+
+ngrams <- function(input_text){
+  # Create a dataframe
+  input_text <- data_frame(text = input_text)
+  # Clean the Inpput
+  replace_reg <- "[^[:alpha:][:space:]]*"
+  input_text <- input_text %>%
+    mutate(text = str_replace_all(text, replace_reg, ""))
+  # Find word count, separate words, lower case
+  input_count <- str_count(input_text, boundary("word"))
+  input_words <- unlist(str_split(input_text, boundary("word")))
+  input_words <- tolower(input_words)
+  # Call the matching functions
+  nextWord <- ifelse(input_count == 0, "Please enter a word to be guess what the next word should be.",
+               ifelse (input_count == 1, bigram(input_words),
+               ifelse (input_count == 2, trigram(input_words),
+               ifelse (input_count == 3, quadgram(input_words)
+               ))))
+  if(nextWord == "?"){
+    nextWord = "Unbale to predict the next word based on your input due to data related queries. Please try with aother word." 
+  }
+  return(nextWord)
+}
+```
+
+UI code
+
+```{r echo=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
+shinyUI(fluidPage(
+  
+  # Application title
+  titlePanel("Next Word Prediction"),
+  
+  sidebarPanel(
+    textInput("inputString", "Please enter a word",value = ""),
+    submitButton('Submit'),
+    br(),
+    br(),
+    br(),
+    br()
+  ),
+  
+  mainPanel(
+    h4("Your Next Word should be : "),
+    verbatimTextOutput("prediction")
+   
+  )
+))
+```
+
+
+## References##
 
 1) Source code GitHub Url
 
