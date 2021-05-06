@@ -1,0 +1,69 @@
+title: "ReCoursera Data Science Capstone Final Project"
+author: "Harikrishna Vemula"
+date: "05/06/2021"
+output:
+  slidy_presentation: default
+  html_document:
+    number_sections: yes
+    toc: yes
+  ioslides_presentation: default
+mode: selfcontained
+job: Next Word Prediction
+subtitle: By refering SwiftKey Data
+highlighter: highlight.js
+widgets: bootstrap
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## ##
+
+**Introduction**
+
+This is Coursera's Data Science Capstone Final Project Assignment.
+This project utilizing SwiftKey's data along with open source provider www.bannedwordslist.com.
+We can notice how we can model/train the data with basic mining concepts for get the accurate output through the code. I am proving reference urls in Reference section of this shiny presentation for your review.
+
+**Objective**
+
+When we type a phrase in the input box, we need to get a prediction of a single word after pressing submit.
+
+## ##
+
+**Prediction Model**
+
+The prediction model describes following mining Key models items:
+
+1) Data loading, read data and create data frames
+2) Data Sampling 
+3) Data Cleaning
+4) Build N-Gram Tokenizer
+5) Separate words and store into respective Ngrams
+6) Save separated Ngrams into Physical folder 
+
+**Next Word Prediction Shiny Web App**
+
+Next word prediction shiny web app UI having following fields. 
+
+1) Title
+2) Input text box to enter word or phrase
+3) output section which uses to display the predicted word from the mining model.Key Features:
+4) Side panel and notification text for user experience.
+
+## ##
+
+1) Source code GitHub Url
+
+
+
+2) SwiftKey Data Source
+
+https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip
+
+3) Swear Words 
+
+http://www.bannedwordlist.com/lists/swearWords.csv
+
+
