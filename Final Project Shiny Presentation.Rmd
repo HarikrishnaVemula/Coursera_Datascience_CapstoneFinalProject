@@ -1,12 +1,13 @@
-title: "ReCoursera Data Science Capstone Final Project"
+---
+title: "Coursera Data Science Capstone Final Project"
 author: "Harikrishna Vemula"
 date: "05/06/2021"
 output:
-  slidy_presentation: default
+  ioslides_presentation: default
   html_document:
     number_sections: yes
     toc: yes
-  ioslides_presentation: default
+  slidy_presentation: default
 mode: selfcontained
 job: Next Word Prediction
 subtitle: By refering SwiftKey Data
@@ -14,9 +15,7 @@ highlighter: highlight.js
 widgets: bootstrap
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## ##
 
@@ -56,7 +55,7 @@ Next word prediction shiny web app UI having following fields.
 
 1) Source code GitHub Url
 
-
+https://github.com/HarikrishnaVemula/Coursera_Datascience_CapstoneFinalProject
 
 2) SwiftKey Data Source
 

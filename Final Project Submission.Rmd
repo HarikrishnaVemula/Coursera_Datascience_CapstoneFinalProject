@@ -84,7 +84,7 @@ rm(list = c("blogs", "blogsData", "blogSample","news", "newsData",
 
 data("stop_words")
 
-swear_words <- read_delim("D:/Data Science Coursera/Capstone Final Project/final/en_US/swearWords.csv", delim = "\n", col_names = FALSE)
+swear_words <- read_delim("swearWords.csv", delim = "\n", col_names = FALSE)
 swear_words <- unnest_tokens(swear_words, word, X1)
 
 
