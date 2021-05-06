@@ -1,0 +1,173 @@
+---
+title: "Final Project Submission"
+author: "Harikrishna Vemula"
+date: "05/04/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r }
+
+library(downloader)
+library(tm)
+library(knitr)
+library(tidyverse)
+library(dplyr)
+library(dtplyr)
+library(data.table)
+library(ggthemes)
+library(wordcloud)
+library(ngram)
+library(tidytext)
+library(RWeka)
+library(stringi)
+library(dplyr)
+library(pryr)
+library(ggplot2)
+library(stringr)
+```
+
+# Data loading, read data and create data frames
+
+```{r}
+
+if(!file.exists("Coursera-SwiftKey.zip")){
+      download.file("https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip", "Coursera-SwiftKey.zip")
+      unzip("Coursera-SwiftKey.zip")
+}
+
+# Load Data
+blogsData   <- "./final/en_US/en_US.blogs.txt"
+newsData    <- "./final/en_US/en_US.news.txt"
+twitterData <- "./final/en_US/en_US.twitter.txt" 
+
+# Read readLines
+blogs   <- readLines(blogsData, skipNul = TRUE)
+news    <- readLines(newsData,  skipNul = TRUE)
+twitter <- readLines(twitterData, skipNul = TRUE)
+
+blogs   <- data_frame(text = blogs)
+news    <- data_frame(text = news)
+twitter <- data_frame(text = twitter)
+
+
+```
+
+## Data Sampling 
+
+```{r}
+set.seed(1001)
+Sample <- 0.05
+
+blogSample <- blogs %>%
+  sample_n(., nrow(blogs)*Sample)
+newsSample <- news %>%
+  sample_n(., nrow(news)*Sample)
+twitterSample <- twitter %>%
+  sample_n(., nrow(twitter)*Sample)
+
+repoSample <- bind_rows(mutate(blogSample, source = "blogs"),
+                         mutate(newsSample,  source = "news"),
+                         mutate(twitterSample, source = "twitter")) 
+repoSample$source <- as.factor(repoSample$source)
+
+```
+
+## Data Cleaning
+
+```{r}
+rm(list = c("blogs", "blogsData", "blogSample","news", "newsData",     
+            "newsSample", "Sample", "twitter","twitterData", 
+            "twitterSample"))
+
+data("stop_words")
+
+swear_words <- read_delim("D:/Data Science Coursera/Capstone Final Project/final/en_US/swearWords.csv", delim = "\n", col_names = FALSE)
+swear_words <- unnest_tokens(swear_words, word, X1)
+
+
+
+
+cleanSample <-  repoSample %>%
+  mutate(text = str_replace_all(text, "[^[:alpha:][:space:]]*", "")) %>%
+  mutate(text = str_replace_all(text, "http[^[:space:]]*", "")) %>%
+  mutate(text = str_replace_all(text, "\\b(?=\\w*(\\w)\\1)\\w+\\b", "")) %>% 
+  mutate(text = iconv(text, "ASCII//TRANSLIT"))
+
+rm(list = c("repoSample"))
+
+```
+
+##  Build N-Gram Tokenizer
+
+``` {r}
+unigramRepo <- cleanSample %>%
+      unnest_tokens(word, text) %>%
+      anti_join(swear_words) %>%
+      anti_join(stop_words)
+
+bigramRepo <- cleanSample  %>%
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+trigramRepo <- cleanSample  %>%
+  unnest_tokens(trigram, text, token = "ngrams", n = 3)
+quadgramRepo <- cleanSample  %>%
+  unnest_tokens(quadgram, text, token = "ngrams", n = 4)
+
+
+
+unigramNGram <- unigramRepo %>%
+  count(word) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+ 
+
+bigramNgram <- bigramRepo  %>%
+  count(bigram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+ 
+
+trigramNgram <- trigramRepo %>%
+  count(trigram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+ 
+
+quadgramNgram <- quadgramRepo %>%
+  count(quadgram) %>%  
+  mutate(proportion = n / sum(n)) %>%
+  arrange(desc(proportion)) %>%  
+  mutate(coverage = cumsum(proportion)) %>%
+  filter(coverage <= 0.5)
+```
+
+## Separate words and store into respective Ngrams
+
+```{r}
+biWords <- bigramNgram %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+triWords <- trigramNgram %>%
+  separate(trigram, c("word1", "word2", "word3"), sep = " ")
+quadWords <- quadgramNgram %>%
+  separate(quadgram, c("word1", "word2", "word3", "word4"), sep = " ")
+```
+
+## Save separated Ngrams into Physical folder 
+
+``` {r}
+saveRDS(biWords, "bi_words.rds")
+saveRDS(triWords, "tri_words.rds")
+saveRDS(quadWords, "quad_words.rds")
+
+```
+
+
+
